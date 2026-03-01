@@ -8,20 +8,66 @@ import { getTask, updateTask, deleteTask } from '../controllers/taskController';
 const router = Router();
 
 /**
- * ============================================
- * GET TASK BY ID
- * ============================================
- * GET /api/tasks/:id
+ * @swagger
+ * /api/v1/tasks/{taskId}:
+ *   get:
+ *     summary: Get task by ID
+ *     description: Retrieve details of a specific task including title, description, status, priority, and assignee.
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID
+ *         example: 1
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/TaskRetrieved'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.get('/:id', environmentalAuthMiddleware, asyncHandler(getTask));
 
 /**
- * ============================================
- * UPDATE TASK
- * ============================================
- * PUT /api/tasks/:id
+ * @swagger
+ * /api/v1/tasks/{taskId}:
+ *   patch:
+ *     summary: Update task
+ *     description: Update task details including title, description, status, priority, assignee, and due date. Only task assignee or project members can update.
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID
+ *         example: 1
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/UpdateTask'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/TaskUpdated'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
-router.put(
+router.patch(
   '/:id',
   environmentalAuthMiddleware,
   validate(updateTaskSchema),
@@ -29,10 +75,32 @@ router.put(
 );
 
 /**
- * ============================================
- * DELETE TASK
- * ============================================
- * DELETE /api/tasks/:id
+ * @swagger
+ * /api/v1/tasks/{taskId}:
+ *   delete:
+ *     summary: Delete task
+ *     description: Permanently delete a task. Only project admins or task creator can delete. This action cannot be undone.
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID
+ *         example: 1
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/TaskDeleted'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.delete('/:id', environmentalAuthMiddleware, asyncHandler(deleteTask));
 

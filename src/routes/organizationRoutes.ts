@@ -19,12 +19,24 @@ import { getAllTasksInOrganization } from '../controllers/taskController';
 const router = Router();
 
 /**
- * POST /api/organizations
- * Create new organization
- * @param name - Organization name (required)
- * @param description - Organization description (optional)
- * @param logo - Organization logo URL (optional)
- * @returns Created organization
+ * @swagger
+ * /api/v1/organizations:
+ *   post:
+ *     summary: Create a new organization
+ *     description: Create a new organization for the authenticated user. The user automatically becomes the owner.
+ *     tags:
+ *       - Organizations
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/CreateOrganization'
+ *     responses:
+ *       201:
+ *         $ref: '#/components/responses/OrganizationCreated'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  */
 router.post(
   '/',
@@ -34,9 +46,20 @@ router.post(
 );
 
 /**
- * GET /api/organizations
- * Get all organizations for the authenticated user
- * @returns Array of organizations
+ * @swagger
+ * /api/v1/organizations:
+ *   get:
+ *     summary: Get all organizations for authenticated user
+ *     description: Retrieve all organizations the authenticated user is a member of or owns.
+ *     tags:
+ *       - Organizations
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/OrganizationsRetrieved'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  */
 router.get(
   '/',
@@ -45,10 +68,30 @@ router.get(
 );
 
 /**
- * GET /api/organizations/:id
- * Get a single organization by ID
- * @param orgId - Organization ID
- * @returns Organization details
+ * @swagger
+ * /api/v1/organizations/{orgId}:
+ *   get:
+ *     summary: Get organization by ID
+ *     description: Retrieve details of a specific organization by its ID.
+ *     tags:
+ *       - Organizations
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Organization ID
+ *         example: 1
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/OrganizationRetrieved'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.get(
   '/:orgId',
@@ -57,15 +100,38 @@ router.get(
 );
 
 /**
- * PUT /api/organizations/:id
- * Update an organization
- * @param orgId - Organization ID
- * @param name - Organization name (optional)
- * @param description - Organization description (optional)
- * @param logo - Organization logo URL (optional)
- * @returns Updated organization
+ * @swagger
+ * /api/v1/organizations/{orgId}:
+ *   patch:
+ *     summary: Update an organization by ID
+ *     description: Update organization details. Only the owner or admins can update.
+ *     tags:
+ *       - Organizations
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Organization ID
+ *         example: 1
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/UpdateOrganization'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/OrganizationUpdated'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
-router.put(
+router.patch(
   '/:orgId',
   environmentalAuthMiddleware,
   validate(updateOrganizationSchema),
@@ -73,10 +139,32 @@ router.put(
 );
 
 /**
- * DELETE /api/organizations/:id
- * Delete an organization
- * @param orgId - Organization ID
- * @returns Success message
+ * @swagger
+ * /api/v1/organizations/{orgId}:
+ *   delete:
+ *     summary: Delete an organization by ID
+ *     description: Permanently delete an organization. Only the owner can delete. This action cannot be undone.
+ *     tags:
+ *       - Organizations
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Organization ID
+ *         example: 1
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/OrganizationDeleted'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.delete(
   '/:orgId',
@@ -85,7 +173,63 @@ router.delete(
 );
 
 /**
- * GET /api/organizations/:orgId/tasks
+ * @swagger
+ * /api/v1/organizations/{orgId}/tasks:
+ *   get:
+ *     summary: Get all tasks in organization
+ *     description: Retrieve all tasks across all projects in the organization.
+ *     tags:
+ *       - Organizations
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Organization ID
+ *         example: 1
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [BACKLOG, TODO, IN_PROGRESS, DONE, CANCELLED]
+ *         description: Filter by task status
+ *       - in: query
+ *         name: priority
+ *         schema:
+ *           type: string
+ *           enum: [LOW, MEDIUM, HIGH, CRITICAL]
+ *         description: Filter by task priority
+ *       - in: query
+ *         name: assignedTo
+ *         schema:
+ *           type: integer
+ *         description: Filter by assignee user ID
+ *     responses:
+ *       200:
+ *         description: Tasks retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Organization tasks retrieved successfully."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.get(
   '/:orgId/tasks',

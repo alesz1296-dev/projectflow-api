@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { config, isDevelopment, isProduction } from './env';
 import { prisma } from './lib/prisma';
+import { setupSwagger } from './lib/swagger';
+
 import {
   errorHandler,
   asyncHandler,
@@ -30,7 +32,7 @@ dotenv.config();
 const app = express();
 
 // ============================================
-// MIDDLEWARE SETUP (Sequential)
+// MIDDLEWARE SETUP
 // ============================================
 
 app.use(cors());
@@ -47,6 +49,9 @@ app.use((req, res, next) => {
 
 // Apply general token bucket limiter to ALL /api routes
 app.use('/api', generalLimiterTokenBucket);
+
+// Setup Swagger
+setupSwagger(app);
 
 // ============================================
 // ROUTES (Request handlers)
