@@ -1,8 +1,12 @@
 {
-  "name": "production-backend-api",
+  "name": "projectflow-api",
   "version": "1.0.0",
-  "description": "Production-grade backend API",
+  "description": "A production-grade project management API showcasing an array of back-end development capabilities",
   "main": "dist/server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alesz1296-dev/projectflow-api.git"
+  },
   "scripts": {
     "dev": "ts-node src/server.ts",
     "build": "tsc",
