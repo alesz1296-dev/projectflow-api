@@ -34,7 +34,7 @@ export class ProjectService {
     }
 
     // Create project and add creator as ADMIN in transaction
-    const project = await prisma.$transaction(async (tx) => {
+    const project = await prisma.$transaction(async (tx: any) => {
       // Create project
       const newProject = await tx.project.create({
         data: {

@@ -78,7 +78,7 @@ export class OrganizationService {
     });
 
     // Transform each item into array
-    return memberships.map((m) => m.organization);
+    return memberships.map((m: any) => m.organization);
   }
 
   /**

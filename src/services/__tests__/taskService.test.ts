@@ -40,7 +40,7 @@ describe('TaskService.getAllTasksInOrganization', () => {
         organizationId: 1,
         role: 'member',
       };
-      const mockTasks = [
+      const mockTasks: any[] = [
         {
           id: 1,
           title: 'Task 1',
@@ -84,7 +84,7 @@ describe('TaskService.getAllTasksInOrganization', () => {
         organizationId: 1,
         role: 'member',
       };
-      const mockTasks = [
+      const mockTasks: any[] = [
         {
           id: 1,
           title: 'Task 1',
@@ -131,7 +131,7 @@ describe('TaskService.getAllTasksInOrganization', () => {
         organizationId: 1,
         role: 'member',
       };
-      const mockTasks = [
+      const mockTasks: any[] = [
         {
           id: 1,
           title: 'Task 1',
@@ -178,7 +178,7 @@ describe('TaskService.getAllTasksInOrganization', () => {
         organizationId: 1,
         role: 'member',
       };
-      const mockTasks = [
+      const mockTasks: any[] = [
         {
           id: 1,
           title: 'Task 1',
@@ -228,7 +228,7 @@ describe('TaskService.getAllTasksInOrganization', () => {
         organizationId: 1,
         role: 'member',
       };
-      const mockTasks = [];
+      const mockTasks: any = [];
 
       const mockFindUnique = prisma.membership.findUnique as jest.Mock;
       const mockFindMany = prisma.task.findMany as jest.Mock;
