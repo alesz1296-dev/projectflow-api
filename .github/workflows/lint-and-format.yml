@@ -36,7 +36,6 @@ jobs:
       # Step 4: Run ESLint for code quality
       - name: Check code style with ESLint
         run: npm run lint
-        # Don't fail if eslint has warnings, only errors
         continue-on-error: false
 
       # Step 5: Check Prettier formatting
@@ -48,9 +47,9 @@ jobs:
         run: npm run lint -- --format json > eslint-report.json || true
         continue-on-error: true
 
-      # Step 7: Upload report as artifact
+      # Step 7: Upload report as artifact (UPDATED TO v4)
       - name: Upload ESLint report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: eslint-report
