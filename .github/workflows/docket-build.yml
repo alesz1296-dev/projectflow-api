@@ -1,0 +1,51 @@
+# Workflow Name
+name: Build and Push Docker Image
+
+# When to run - ONLY on main branch (don't build on every branch)
+on:
+  push:
+    branches:
+      - main
+    # Optional: only build on tags
+    tags:
+      - 'v*'
+
+# What to do
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out code
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker Buildx (advanced Docker builder)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          # Use secrets (stored securely in GitHub)
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 4: Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          # Tag with latest and commit SHA
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/projectflow-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/projectflow-api:${{ github.sha }}
+          # Use cache for faster builds
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/projectflow-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/projectflow-api:buildcache,mode=max
+
+      # Step 5: Show what was built
+      - name: Build complete!
+        run: echo "Docker image built and pushed successfully!"

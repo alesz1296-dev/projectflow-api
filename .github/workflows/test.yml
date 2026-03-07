@@ -1,0 +1,83 @@
+# Workflow Name
+name: Run Tests
+
+# ═══════════════════════════════════════════════════════════════
+# WHEN THIS WORKFLOW RUNS
+# ═══════════════════════════════════════════════════════════════
+on:
+  push:
+    # Run when code is pushed to these branches
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    # Also run when a pull request is created
+    branches:
+      - main
+      - develop
+
+# ═══════════════════════════════════════════════════════════════
+# WHAT WORK TO DO
+# ═══════════════════════════════════════════════════════════════
+jobs:
+  # Job name: "test"
+  test:
+    runs-on: ubuntu-latest
+
+    # Services needed (PostgreSQL for tests)
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: projectflow
+        # Health check to wait for DB to be ready
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    # Individual steps to execute
+    steps:
+      # Step 1: Download your code from GitHub
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Step 2: Install Node.js version 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          # Cache npm packages for faster installs
+          cache: 'npm'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run TypeScript compiler check
+      - name: Check TypeScript compilation
+        run: npx tsc --noEmit
+
+      # Step 5: Run linter
+      - name: Run ESLint
+        run: npm run lint
+
+      # Step 6: Run all tests
+      - name: Run tests
+        run: npm test -- --coverage
+        env:
+          # Pass database URL to tests
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/projectflow
+
+      # Step 7: Upload coverage to Codecov
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
