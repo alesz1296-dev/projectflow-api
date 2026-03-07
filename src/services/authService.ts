@@ -80,7 +80,8 @@ export class AuthService {
   static verifyRefreshToken(token: string): JwtPayload | null {
     try {
       return jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as JwtPayload;
-    } catch (error) {
+    } catch (err) {
+      console.error('Auth error:', err);
       return null; // Token invalid or expired
     }
   }

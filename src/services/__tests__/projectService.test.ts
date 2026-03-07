@@ -58,14 +58,12 @@ describe('ProjectService', () => {
             }),
           },
           projectMembership: {
-            create: jest
-              .fn()
-              .mockResolvedValueOnce({
-                id: 1,
-                userId: 1,
-                projectId: 1,
-                role: 'ADMIN',
-              }),
+            create: jest.fn().mockResolvedValueOnce({
+              id: 1,
+              userId: 1,
+              projectId: 1,
+              role: 'ADMIN',
+            }),
           },
         };
         return callback(mockTx);

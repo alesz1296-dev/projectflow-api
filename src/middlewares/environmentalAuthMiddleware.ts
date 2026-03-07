@@ -8,18 +8,9 @@
  * Production Mode:
  *   - Requires valid JWT token
  *   - Validates token before proceeding
- *
-
  */
 
 import jwt from 'jsonwebtoken';
-
-interface AuthRequest {
-  user?: {
-    id: number;
-    email: string;
-  };
-}
 
 export const environmentalAuthMiddleware = (
   req: any,
@@ -51,7 +42,9 @@ export const environmentalAuthMiddleware = (
       };
 
       next();
-    } catch (error) {
+    } catch (err) {
+      // Log error for debugging
+      console.error('Token verification failed:', err);
       res.status(401).json({
         error: 'Invalid or expired token',
         message: 'Please provide a valid JWT token',

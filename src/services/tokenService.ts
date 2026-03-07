@@ -109,7 +109,8 @@ export class TokenService {
         success: true,
         revokedCount: result.count,
       };
-    } catch (error) {
+    } catch (err) {
+      console.error('Token error:', err);
       throw new AppError(500, 'Failed to revoke user tokens');
     }
   }
@@ -166,7 +167,8 @@ export class TokenService {
       });
 
       return refreshTokenRecord;
-    } catch (error) {
+    } catch (err) {
+      console.error('Token verification error:', err);
       throw new AppError(500, 'Failed to store refresh token');
     }
   }

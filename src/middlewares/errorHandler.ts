@@ -19,12 +19,7 @@ export class AppError extends Error {
  * GLOBAL ERROR HANDLER MIDDLEWARE
  * ============================================
  */
-export const errorHandler = (
-  error: any,
-  req: Request,
-  res: Response,
-  next: NextFunction // We accept it, but don't use it. Error is handled, No need to pass to next middleware.
-) => {
+export const errorHandler = (error: any, req: Request, res: Response) => {
   // Default error properties
   let statusCode = error.statusCode || 500;
   let message = error.message || 'Internal Server Error';
@@ -127,11 +122,7 @@ export const asyncHandler =
  * 404 HANDLER (Must be last middleware)
  * ============================================
  */
-export const notFoundHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const notFoundHandler = (req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     message: `Route not found: ${req.method} ${req.originalUrl}`,

@@ -1,22 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { config, isDevelopment, isProduction } from './env';
+// import { config, isDevelopment, isProduction } from './env';
 import { prisma } from './lib/prisma';
 import { setupSwagger } from './lib/swagger';
 
-import {
-  errorHandler,
-  asyncHandler,
-  notFoundHandler,
-  AppError,
-} from './middlewares/errorHandler';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
 // Import token bucket limiters
 import {
   generalLimiterTokenBucket,
-  authLimiterTokenBucket,
-  writeLimiterTokenBucket,
   healthCheckLimiterTokenBucket,
 } from './middlewares/rateLimiter';
 

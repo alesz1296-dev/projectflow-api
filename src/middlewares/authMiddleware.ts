@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: JwtPayload & { id: number; email: string };
@@ -42,7 +43,8 @@ export const authenticate = (
     // Attach user to request
     req.user = decoded;
     next();
-  } catch (error) {
+  } catch (err) {
+    console.error('JWT verification failed:', err);
     return res.status(401).json({
       success: false,
       message: 'Invalid or expired token',
