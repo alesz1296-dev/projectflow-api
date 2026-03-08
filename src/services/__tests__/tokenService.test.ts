@@ -194,9 +194,16 @@ describe('TokenService', () => {
 
       mockUpdateMany.mockRejectedValueOnce(new Error('Database error'));
 
-      await expect(TokenService.revokeAllUserTokens(1)).rejects.toThrow(
-        AppError
-      );
+      try {
+        await TokenService.revokeAllUserTokens(1);
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).statusCode).toBe(500);
+        expect((error as AppError).message).toBe(
+          'Failed to revoke user tokens'
+        );
+      }
     });
   });
 
