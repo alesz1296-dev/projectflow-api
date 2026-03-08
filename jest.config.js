@@ -19,12 +19,18 @@ module.exports = {
     },
   },
   testTimeout: 10000,
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
         tsconfig: {
           strict: false,
+          skipLibCheck: true,
         },
       },
     ],

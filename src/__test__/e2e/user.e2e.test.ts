@@ -1,45 +1,48 @@
-// Mock MUST be at top level, before any imports
-jest.mock('../../middlewares/rateLimiter', () => ({
-  authLimiterTokenBucket: (req: any, res: any, next: any) => next(),
-  generalLimiterTokenBucket: (req: any, res: any, next: any) => next(),
-  writeLimiterTokenBucket: (req: any, res: any, next: any) => next(),
-  healthCheckLimiterTokenBucket: (req: any, res: any, next: any) => next(),
-}));
-
-jest.mock('../../middlewares/validationMiddleware', () => ({
-  validate: () => (req: any, res: any, next: any) => next(),
-}));
-
-jest.mock('../../middlewares/authMiddleware', () => ({
-  authenticate: (req: any, res: any, next: any) => {
-    req.user = { id: 1 };
-    next();
+// At the very top, before any imports:
+jest.mock('../../services/userService', () => ({
+  UserService: {
+    registerUser: jest.fn(),
+    loginUser: jest.fn(),
+    getAllUsers: jest.fn(),
+    getUserById: jest.fn(),
+    updateUserById: jest.fn(),
+    deleteUserById: jest.fn(),
   },
 }));
 
-jest.mock('../../services/userService', () => ({
-  registerUser: jest.fn(),
-  loginUser: jest.fn(),
-  getAllUsers: jest.fn(),
-  getUserById: jest.fn(),
-  updateUserById: jest.fn(),
-  deleteUserById: jest.fn(),
-}));
-
 jest.mock('../../services/tokenService', () => ({
-  generateTokens: jest.fn(),
-  verifyRefreshToken: jest.fn(),
-  revokeRefreshToken: jest.fn(),
-  revokeAllUserTokens: jest.fn(),
+  TokenService: {
+    generateTokens: jest.fn(),
+    verifyRefreshToken: jest.fn(),
+    revokeRefreshToken: jest.fn(),
+    revokeAllUserTokens: jest.fn(),
+  },
 }));
 
-import request from 'supertest';
-import express, { Express } from 'express';
+jest.mock('../../middlewares/authMiddleware', () => ({
+  authenticate: (_req: any, _res: any, next: any) => next(),
+}));
+
+jest.mock('../../middlewares/validationMiddleware', () => ({
+  validate: () => (_req: any, _res: any, next: any) => next(),
+}));
+
+jest.mock('../../middlewares/rateLimiter', () => ({
+  authLimiterTokenBucket: (_req: any, _res: any, next: any) => next(),
+  generalLimiterTokenBucket: (_req: any, _res: any, next: any) => next(),
+  writeLimiterTokenBucket: (_req: any, _res: any, next: any) => next(),
+  healthCheckLimiterTokenBucket: (_req: any, _res: any, next: any) => next(),
+}));
+
+// imports
+import { Express } from 'express';
 import cors from 'cors';
+import request from 'supertest';
+import express from 'express';
 import { errorHandler, notFoundHandler } from '../../middlewares/errorHandler';
 import userRoutes from '../../routes/userRoutes';
-import * as UserService from '../../services/userService';
-import * as TokenService from '../../services/tokenService';
+import { UserService } from '../../services/userService';
+import { TokenService } from '../../services/tokenService';
 
 describe('User E2E Journey Tests', () => {
   let app: Express;
